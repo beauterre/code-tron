@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const verItem = document.createElement('div');
   verItem.textContent = 'v1.0 ' + formatted;
-  verItem.style.cssText = 'margin-left:auto; padding:0 10px; font:12px monospace; color:#9bd9b0; align-self:center;';
+  verItem.style.cssText = 'margin-left:auto; padding:0 10px; font:12px monospace; align-self:center;';
   console.log("attempt update version");
   document.getElementById('datetime').appendChild(verItem);
 });

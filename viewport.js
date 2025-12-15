@@ -3,6 +3,7 @@
   const spacer = document.getElementById('scroll-spacer');
   const canvas = document.getElementById('editor-canvas');
   const ctx = canvas.getContext('2d');
+  const projectPanelWidth=200; // change this if you want to change the width of the project panel..
 
   // Hidden textarea to receive IME and real keyboard input reliably
   const hidden = document.createElement('textarea');
@@ -92,7 +93,8 @@
   let blink = true;
   setInterval(()=>{ blink = !blink; render(); }, cfg.cursorBlink);
 
-  function render(){
+  function render()
+  {
     const model = EditorApp.model.model;
     const cursor = EditorApp.model.cursor;
 
@@ -134,7 +136,51 @@
         ctx.fillText(ch, x, y+2);
         x += cfg.charWidth;
       }
+	  // ==== Draw scrollbars ====
+	  drawScrollBars();
+
     }
+	function drawScrollBars()
+	{
+		ctx.save();
+
+		// Scrollbar track style
+		ctx.fillStyle = '#0f3f29';
+
+		const vpWidth  = canvas.width;
+		const vpHeight = canvas.height;
+
+		const contentWidth  = Math.max(canvas.width, cfg.charWidth * model.reduce((max, line) => Math.max(max, line.length), 0) + cfg.gutterWidth + cfg.padding*2);
+		const contentHeight = model.length * cfg.lineHeight + cfg.padding*2;
+
+		const scrollSize = 20; // thickness
+
+		// Horizontal scrollbar (bottom, leave bottom-right corner empty)
+	const hTrackWidth = vpWidth - projectPanelWidth - scrollSize; // leave project panel + corner
+		const hTrackHeight = scrollSize;
+		const hTrackX = 0;
+		const hTrackY = vpHeight - scrollSize;
+		ctx.fillRect(hTrackX, hTrackY, hTrackWidth, hTrackHeight);
+
+		const hThumbWidth = Math.max(20, (vpWidth / contentWidth) * hTrackWidth);
+		const hThumbX = (viewport.scrollLeft / (contentWidth - vpWidth)) * (hTrackWidth - hThumbWidth);
+		ctx.fillStyle = '#9bd9b0';
+		ctx.fillRect(hThumbX, hTrackY, hThumbWidth, hTrackHeight);
+
+		// Vertical scrollbar (right, leave bottom-right corner empty)
+		ctx.fillStyle = '#0f3f29';
+		const vTrackWidth = scrollSize;
+		const vTrackX = vpWidth - scrollSize- projectPanelWidth;
+		const vTrackY = viewport.offsetTop; // start below menubar
+		const vTrackHeight = vpHeight/2 - scrollSize*5; // leave space for horizontal scrollbar		ctx.fillRect(vTrackX, vTrackY, vTrackWidth, vTrackHeight);
+
+		const vThumbHeight = Math.max(20, (vpHeight / contentHeight) * vTrackHeight);
+		const vThumbY = (viewport.scrollTop / (contentHeight - vpHeight)) * (vTrackHeight - vThumbHeight);
+		ctx.fillStyle = '#9bd9b0';
+		ctx.fillRect(vTrackX, vThumbY, vTrackWidth, vThumbHeight);
+
+		ctx.restore();
+	}
 
     clampCursor();
 
