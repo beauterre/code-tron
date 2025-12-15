@@ -1,0 +1,36 @@
+
+    :root{
+      --gutter-width:72px;
+      --bg:#0b2b12;
+      --panel:#07220e;
+      --soft:#33aa44;
+	 
+      --cursor-inv:#c9f7d1;
+      --line-height:20px;
+      --font-size:14px;
+      --font-family: "Fira Code", "Courier New", monospace;
+      --bar:#061a0b;
+    }
+	/*
+	soft te soft: #154822
+Voorstel	Hex	Contrast t.o.v. #07220e	Effect
+Sterkere groen	#33aa44	Medium	Groen blijft, duidelijker in zonlicht
+Lichtgroen	#66ff99	Hoog	Heel goed leesbaar, kan fel lijken
+Off-white	#c9f7d1	Zeer hoog	Maximaal contrast, lijkt op je cursor-inv kleur
+Cyan-achtig	#2ce6c1	Hoog	Fris en leesbaar, iets koel
+	*/
+    html,body{height:100%;margin:0;background:var(--bg); overflow:hidden;}
+    #titlebar{height:28px;background:var(--bar);color:#9bd9b0;display:flex;align-items:center;padding:0 10px;font:12px monospace}
+    #titlebar .ver{opacity:.7;margin:0 6px}
+    #menubar{height:28px;background:#05200d;color:#9bd9b0;display:flex;align-items:center;font:12px monospace}
+    .menu{position:relative;padding:0 12px;cursor:default}
+    .menu:hover{background:#083016}
+    .submenu{display:none;position:absolute;top:28px;left:0;background:#05200d;border:1px solid #0f3f29;z-index:100}
+    .menu:hover .submenu{display:block}
+    .submenu div{padding:6px 14px;white-space:nowrap}
+    .submenu div:hover{background:#0f3f29}
+    #viewport{position:relative;width:100%;height:calc(100vh - 80px);overflow:auto;background:var(--panel)}
+    #scroll-spacer{width:100%;height:1000px;pointer-events:none}
+    #editor-canvas{position:absolute;left:0;top:0;z-index:10}
+    .invisibleInput{position:absolute;left:-9999px;top:-9999px;opacity:0}
+	#hint{font-family:sans-serif;color:#9bd9b0;padding: 3px;}
