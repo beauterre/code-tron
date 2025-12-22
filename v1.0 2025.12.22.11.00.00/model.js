@@ -40,16 +40,6 @@
                "B",
                "B",
                "B",
-               "B",
-               "B",
-               "B",
-               "B",
-               "B",
-               "B",
-               "B",
-               "B",
-               "B",
-               "B",
                "C"
               ];
   let cursor = { line:0, col:0, x:0,y:0 }; // y,x, weird, right??
