@@ -233,9 +233,81 @@
     if(val.length>0) EditorApp.model.insertTextAtCursor(val);
   });
 
-  hidden.addEventListener('keydown', (e)=>{
-    if(EditorApp.model.handleKey) EditorApp.model.handleKey(e, render);
-  });
+  
+//  hidden.addEventListener('keydown', (e)=>{
+//    if(EditorApp.model.handleKey) EditorApp.model.handleKey(e, render);
+//  });
+
+hidden.addEventListener('keydown', (e) => {
+  if (e.isComposing) return;
+
+  switch (e.key) {
+
+    case 'Tab':
+      e.preventDefault();
+      EditorApp.model.insertTextAtCursor(' '.repeat(cfg.tabSize));
+      break;
+
+    case 'Enter':
+      e.preventDefault();
+      newlineWithAutoIndent();
+      break;
+
+    case 'Backspace':
+      e.preventDefault();
+      EditorApp.model.deleteBeforeCursor();
+      break;
+
+    case 'Delete':
+      e.preventDefault();
+      EditorApp.model.deleteAfterCursor();
+      break;
+
+    case 'ArrowLeft':
+      e.preventDefault();
+      if (cursor.col > 0) {
+        cursor.col--;
+      } else if (cursor.line > 0) {
+        cursor.line--;
+        cursor.col = model[cursor.line].length;
+      }
+      break;
+
+    case 'ArrowRight':
+      e.preventDefault();
+      if (cursor.col < model[cursor.line].length) {
+        cursor.col++;
+      } else if (cursor.line < model.length - 1) {
+        cursor.line++;
+        cursor.col = 0;
+      }
+      break;
+
+    case 'ArrowUp':
+      e.preventDefault();
+      cursor.line = Math.max(0, cursor.line - 1);
+      cursor.col = Math.min(cursor.col, model[cursor.line].length);
+      break;
+
+    case 'ArrowDown':
+      e.preventDefault();
+      cursor.line = Math.min(model.length - 1, cursor.line + 1);
+      cursor.col = Math.min(cursor.col, model[cursor.line].length);
+      break;
+
+    default:
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        download();
+      }
+      // everything else flows to input
+      return;
+  }
+
+  render();
+});
+
+
 
   canvas.addEventListener('focus', ()=>{ focusHidden(); });
   canvas.addEventListener('blur', ()=>{ /* nothing */ });
