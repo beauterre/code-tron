@@ -1,14 +1,21 @@
 (() => {
+  // setup.
+  // the big div that contains the canvas.
   const viewport = document.getElementById('viewport');
+   // weird invisible thing, don't exactly know what it is supposed to do??
   const spacer = document.getElementById('scroll-spacer');
+  // the actual canvas we edit on and its context..
   const canvas = document.getElementById('editor-canvas');
   const ctx = canvas.getContext('2d');
-  const projectPanelWidth=200; // change this if you want to change the width of the project panel..
+
+  const projectPanelWidth=200; // we need to get this from the layout or config js.
 
   // Hidden textarea to receive IME and real keyboard input reliably
   const hidden = document.createElement('textarea');
   hidden.className = 'invisibleInput';
   document.body.appendChild(hidden);
+
+  // the cfg, we might get this from a layout or config js.
 
   const cfg = {
     fontSize: parseInt(getComputedStyle(document.documentElement).getPropertyValue('--font-size')) || 14,
@@ -17,7 +24,7 @@
     gutterWidth: parseInt(getComputedStyle(document.documentElement).getPropertyValue('--gutter-width')) || 72,
     padding: 8,
     cursorBlink: 500,
-    tabSize: 2,
+    tabSize: 3, // 3 spaces tabs..
     bg: getComputedStyle(document.documentElement).getPropertyValue('--panel').trim(),
     textColor: getComputedStyle(document.documentElement).getPropertyValue('--soft').trim(),
     cursorInv: getComputedStyle(document.documentElement).getPropertyValue('--cursor-inv').trim(),
@@ -42,6 +49,7 @@
   }
 
   setupMetrics();
+
   window.addEventListener('resize', ()=>{
     setupMetrics(); 
     resizeCanvas(); 
@@ -56,14 +64,9 @@
     spacer.style.height = (EditorApp.model.model.length * cfg.lineHeight + cfg.padding*2) + 'px';
   }
 
-  viewport.addEventListener('scroll', ()=>{
-    canvas.style.left = viewport.scrollLeft + 'px';
-    canvas.style.top = viewport.scrollTop + 'px';
-    render();
-  });
 
   function clampCursor(){
-    const cursor = EditorApp.model.cursor;
+    const cursor = EditorApp.model.cursor; // now also contains x,y..
     const model = EditorApp.model.model;
     if(cursor.line < 0) cursor.line = 0;
     if(cursor.line >= model.length) cursor.line = model.length-1;
@@ -136,6 +139,17 @@
         ctx.fillText(ch, x, y+2);
         x += cfg.charWidth;
       }
+	  // ==== Draw the Cursor in X Y ====
+    // inverted cursor
+    if(document.activeElement === canvas)
+    {
+      const underlying = EditorApp.model.getCharAt(cursor.line, cursor.col) || ' ';
+      ctx.fillStyle = cfg.cursorInv;
+      ctx.fillRect(curX, curY+1, cfg.charWidth, cfg.lineHeight-2);
+      ctx.fillStyle = cfg.bg;
+      ctx.fillText(underlying, curX, curY+2);
+    }
+
 	  // ==== Draw scrollbars ====
 	  drawScrollBars();
 
@@ -199,14 +213,6 @@
       ctx.strokeRect(mx-2,my+1,cfg.charWidth+4,cfg.lineHeight-2);
     }
 
-    // inverted cursor
-    if(document.activeElement === canvas){
-      const underlying = EditorApp.model.getCharAt(cursor.line, cursor.col) || ' ';
-      ctx.fillStyle = cfg.cursorInv;
-      ctx.fillRect(curX, curY+1, cfg.charWidth, cfg.lineHeight-2);
-      ctx.fillStyle = cfg.bg;
-      ctx.fillText(underlying, curX, curY+2);
-    }
   }
 
   function focusHidden(){ hidden.focus(); }

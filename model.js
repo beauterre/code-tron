@@ -13,7 +13,7 @@
   };
 
   let model = ["function helloWorld() {","  console.log('hello');","}",""];
-  let cursor = { line:0, col:0 };
+  let cursor = { line:0, col:0, x:0,y:0 }; // y,x, weird, right??
   let selection = null;
 
   const PAIRS = {'(':')','[':']','{':'}','<':'>'};
