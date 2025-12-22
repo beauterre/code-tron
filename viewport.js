@@ -144,7 +144,7 @@
     // inverted cursor
     if(document.activeElement === canvas)
     {
-      console.log("showing cursor at"+(cursor.line, cursor.col;
+      console.log("showing cursor at"+cursor.line, cursor.col);
       const underlying = EditorApp.model.getCharAt(cursor.line, cursor.col) || ' ';
       ctx.fillStyle = cfg.cursorInv;
       ctx.fillRect(curX, curY+1, cfg.charWidth, cfg.lineHeight-2);
