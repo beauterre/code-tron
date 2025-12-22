@@ -94,7 +94,7 @@
   }
 
   let blink = true;
-  setInterval(()=>{ blink = !blink; render(); }, cfg.cursorBlink);
+  setInterval(()=>{ blink = !blink; render(); console.log("cursor should blink now.")}, cfg.cursorBlink);
 
   function render()
   {
@@ -143,6 +143,7 @@
     // inverted cursor
     if(document.activeElement === canvas)
     {
+      console.log("showing cursor at"+(cursor.line, cursor.col;
       const underlying = EditorApp.model.getCharAt(cursor.line, cursor.col) || ' ';
       ctx.fillStyle = cfg.cursorInv;
       ctx.fillRect(curX, curY+1, cfg.charWidth, cfg.lineHeight-2);
