@@ -85,7 +85,6 @@
   }
 // dit lijkt niet te werken, hmmm
 document.addEventListener('DOMContentLoaded', () => {
-	console.log("attempt update version");
   function pad(n){ return String(n).padStart(2,'0'); }
   const dt = new Date(document.lastModified);
   const formatted =
@@ -97,10 +96,10 @@ document.addEventListener('DOMContentLoaded', () => {
     pad(dt.getSeconds());
 
   const verItem = document.createElement('div');
-  verItem.textContent = 'v1.0 ' + formatted;
+  verItem.textContent = 'v' + formatted;
   verItem.style.cssText = 'margin-left:auto; padding:0 10px; font:12px monospace; align-self:center;';
-  console.log("attempt update version");
   document.getElementById('datetime').appendChild(verItem);
+	console.log("updating version string:"+'v' + formatted);
 });
 
 
