@@ -12,7 +12,36 @@
     cursorInv: getComputedStyle(document.documentElement).getPropertyValue('--cursor-inv').trim(),
   };
 
-  let model = ["function helloWorld() {","  console.log('hello');","}",""];
+  // this is the multidimensional array that we render on the viewport canvas..
+  let model = ["AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD",
+               "B",
+               "B",
+               "B",
+               "B",
+               "B",
+               "B",
+               "B",
+               "B",
+               "B",
+               "B",
+               "B",
+               "B",
+               "B",
+               "B",
+               "B",
+               "B",
+               "B",
+               "B",
+               "B",
+               "B",
+               "B",
+               "B",
+               "B",
+               "B",
+               "B",
+               "B",
+               "C"
+              ];
   let cursor = { line:0, col:0, x:0,y:0 }; // y,x, weird, right??
   let selection = null;
 
