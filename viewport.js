@@ -94,6 +94,7 @@
   }
 
   let blink = true;
+  console.log("starting cursorblink with interval"+cfg.cursorBlink),
   setInterval(()=>{ blink = !blink; render(); console.log("cursor should blink now.")}, cfg.cursorBlink);
 
   function render()
