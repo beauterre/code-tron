@@ -1,33 +1,33 @@
 (() => {
   const menuData = [
     { label: 'File', items:[
-		{label:'Open', act:'open'}, 
-		{label:'Save', act:'save'}, 
+		{label:'Open', act:'open', ctrl: 'o'}, 
+		{label:'Save', act:'save', ctrl: 's'}, 
 		{label:'Save As', act:'save as'}, 
 		{label:'Toggle Autosave', act:'autosave'}, 
 		{label:'Open Folder as Workspace', act:'openfolder'}, 
 		{label:'Close', act:'close'}, 
 		{label:'Close All', act:'close all'}] },
     { label: 'Edit', items:[
-		{label:'Cut', act:'cut', shortcut: 'x'},
-		{label:'Copy', act:'copy', shortcut: 'c'},
-		{label:'Paste', act:'paste', shortcut: 'v'},
-		{label:'Undo', act:'undo', shortcut: 'z'},
-		{label:'Redo', act:'redo', shortcut: 'y'},
-		{label:'Select All', act:'select all', shortcut: 'a'},
+		{label:'Cut', act:'cut', ctrl: 'x'},
+		{label:'Copy', act:'copy', ctrl: 'c'},
+		{label:'Paste', act:'paste', ctrl: 'v'},
+		{label:'Undo', act:'undo', ctrl: 'z'},
+		{label:'Redo', act:'redo', ctrl: 'y'},
+		{label:'Select All', act:'select all', ctrl: 'a'},
 		{label:'Format HTML', act:'format HTML'},
 		{label:'Format JS', act:'format JS'},
 		{label:'Format JSON', act:'format JSon'},
 		{label:'Lint', act:'lint'}] },
     { label: 'Search', items:[
-		{label:'Find', act:'find'},
+		{label:'Find', act:'find', ctrl: 'f'},
 		{label:'Find previous', act:'find prev'},
 		{label:'Find next', act:'find next'},
-		{label:'Replace', act:'replace'},
+		{label:'Replace', act:'replace', ctrl: 'r'},
 		{label:'Replace All', act:'replace all'}] },
     { label: 'View', items:[
-		{label:'Size +', act:'zoomIn'},
-		{label:'Size -', act:'zoomOut'},
+		{label:'Size +', act:'zoomIn', shortcut: '+'},
+		{label:'Size -', act:'zoomOut', shortcut: '-'},
 		{label:'C64 feel (green)'},
 		{label:'Purple Haze'},
 		{label:'Toggle Project Panel', act:'project'}] },
@@ -85,7 +85,6 @@
   }
 // dit lijkt niet te werken, hmmm
 document.addEventListener('DOMContentLoaded', () => {
-	console.log("attempt update version");
   function pad(n){ return String(n).padStart(2,'0'); }
   const dt = new Date(document.lastModified);
   const formatted =
@@ -97,10 +96,10 @@ document.addEventListener('DOMContentLoaded', () => {
     pad(dt.getSeconds());
 
   const verItem = document.createElement('div');
-  verItem.textContent = 'v1.0 ' + formatted;
-  verItem.style.cssText = 'margin-left:auto; padding:0 10px; font:12px monospace; color:#9bd9b0; align-self:center;';
-  console.log("attempt update version");
+  verItem.textContent = 'v' + formatted;
+  verItem.style.cssText = 'margin-left:auto; padding:0 10px; font:12px monospace; align-self:center;';
   document.getElementById('datetime').appendChild(verItem);
+	console.log("updating version string:"+'v' + formatted);
 });
 
 

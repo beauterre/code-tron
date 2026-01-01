@@ -52,10 +52,6 @@
                "B",
                "C"
               ];
-			  
-			  // scroll testing!
-			  
-			  model = ["Next things to do:","   -del (delete, not backspace, fix tab to quantized, shift delete all blank space)","   -menu's","   -scrolling","   -selections","   -keywords","   -projectPanel","   -IO"];// initially an empty page
   let cursor = { line:0, col:0, x:0,y:0 }; // y,x, weird, right??
   let selection = null;
 
@@ -151,74 +147,6 @@
     }
   }
 
-// Add this inside the model.js IIFE, after your editing primitives
-function handleKey(e, render){
-	console.log("model handleKey called")
-    const c = cursor;
-    const m = model;
-
-    if(e.key === 'Tab'){
-        e.preventDefault();
-        insertTextAtCursor(' '.repeat(cfg.tabSize));
-        render();
-        return;
-    }
-    if(e.key === 'Enter'){
-        e.preventDefault();
-        newlineWithAutoIndent();
-        render();
-        return;
-    }
-    if(e.key === 'Backspace'){
-        e.preventDefault();
-        deleteBeforeCursor();
-        render();
-        return;
-    }
-    if(e.key === 'ArrowLeft'){
-        e.preventDefault();
-        if(c.col > 0) c.col--;
-        else if(c.line > 0){
-            c.line--;
-            c.col = m[c.line].length;
-        }
-        render();
-        return;
-    }
-    if(e.key === 'ArrowRight'){
-        e.preventDefault();
-        if(c.col < m[c.line].length) c.col++;
-        else if(c.line < m.length - 1){
-            c.line++;
-            c.col = 0;
-        }
-        render();
-        return;
-    }
-    if(e.key === 'ArrowUp'){
-        e.preventDefault();
-        c.line = Math.max(0, c.line - 1);
-        c.col = Math.min(c.col, m[c.line].length);
-        render();
-        return;
-    }
-    if(e.key === 'ArrowDown'){
-        e.preventDefault();
-        c.line = Math.min(m.length - 1, c.line + 1);
-        c.col = Math.min(c.col, m[c.line].length);
-        render();
-        return;
-    }
-    if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's'){
-        e.preventDefault();
-        if(window.EditorApp.download) window.EditorApp.download();
-        return;
-    }
-
-    // allow other keys to be processed via input
-}
-
-
   function newlineWithAutoIndent(){
     const cur = model[cursor.line];
     const before = cur.slice(0,cursor.col);
@@ -242,7 +170,6 @@ function handleKey(e, render){
     clampCursor,
     insertTextAtCursor,
     deleteBeforeCursor,
-    newlineWithAutoIndent,
-	 handleKey  // <-- added
+    newlineWithAutoIndent
   };
 })();

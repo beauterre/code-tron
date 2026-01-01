@@ -3,16 +3,18 @@
       --gutter-width:72px;
       --bg:#0b2b12;
       --panel:#07220e;
+      --projectpanel:#0b1b12;
       --soft:#33aa44;
 	 
       --cursor-inv:#c9f7d1;
       --line-height:20px;
       --font-size:14px;
       --font-family: "Fira Code", "Courier New", monospace;
-      --bar:#061a0b;
+      --bar:#081308;
     }
 	/*
 	soft te soft: #154822
+	061a0b
 Voorstel	Hex	Contrast t.o.v. #07220e	Effect
 Sterkere groen	#33aa44	Medium	Groen blijft, duidelijker in zonlicht
 Lichtgroen	#66ff99	Hoog	Heel goed leesbaar, kan fel lijken
@@ -20,9 +22,9 @@ Off-white	#c9f7d1	Zeer hoog	Maximaal contrast, lijkt op je cursor-inv kleur
 Cyan-achtig	#2ce6c1	Hoog	Fris en leesbaar, iets koel
 	*/
     html,body{height:100%;margin:0;background:var(--bg); overflow:hidden;}
-    #titlebar{height:28px;background:var(--bar);color:#9bd9b0;display:flex;align-items:center;padding:0 10px;font:12px monospace}
-    #titlebar .ver{opacity:.7;margin:0 6px}
-    #menubar{height:28px;background:#05200d;color:#9bd9b0;display:flex;align-items:center;font:12px monospace}
+    #titlebar{height:28px;background:var(--bar);color:#1f5f39;display:flex;align-items:center;padding:0 10px;font:12px monospace}
+    #titlebar .ver{opacity:.7;margin:0 6px;}
+    #menubar{height:28px;background:#021006;color:#9bd9b0;display:flex;align-items:center;font:12px monospace}
     .menu{position:relative;padding:0 12px;cursor:default}
     .menu:hover{background:#083016}
     .submenu{display:none;position:absolute;top:28px;left:0;background:#05200d;border:1px solid #0f3f29;z-index:100}
@@ -33,4 +35,39 @@ Cyan-achtig	#2ce6c1	Hoog	Fris en leesbaar, iets koel
     #scroll-spacer{width:100%;height:1000px;pointer-events:none}
     #editor-canvas{position:absolute;left:0;top:0;z-index:10}
     .invisibleInput{position:absolute;left:-9999px;top:-9999px;opacity:0}
-	#hint{font-family:sans-serif;color:#9bd9b0;padding: 3px;}
+	#hint{ position: absolute; bottom: 0;font-family:sans-serif;color:#0f3f29;padding: 3px;}
+	
+	/* Layout */
+	
+	#ProjectPanel {
+  position: absolute;
+  color:#1f6f49;
+  overflow-y: scroll;      /* force scrollbar space */
+  scrollbar-gutter: stable; /* ensures space even if scrollbar hidden */
+  left: 0;
+  top: 56px;
+  width: 200px;
+  bottom: 25px;
+  background: var(--projectpanel);
+  border-right: 1px solid #0f3f29;
+  z-index: 20;
+  padding: 4px;
+  box-sizing: border-box;
+  filter: grayscale(80%);
+}
+#ProjectPanel .active {
+  color: var(--projectpanel);   /* text color inverted */
+  background: #1f6f49;          /* highlight background */
+}
+
+
+#viewport {
+  position: absolute;
+  left: 200px; /* next to ProjectPanel */
+  top: 56px;
+  right: 16px; /* leave space for scrollbar */
+  bottom: 0;
+  overflow: hidden; /* we handle scroll manually */
+  background: var(--panel);
+}
+

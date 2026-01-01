@@ -146,8 +146,6 @@
 		ctx.fillRect(curX, curY+1, cfg.charWidth, cfg.lineHeight-2);
 		ctx.fillStyle = cfg.cursorInv;
 		ctx.fillText(underlying, curX, curY+2);
-		ctx.strokeStyle = cfg.cursorInv;
-		ctx.strokeRect(curX, curY+1, cfg.charWidth, cfg.lineHeight-2);
 	}
 	  
 	  
@@ -226,7 +224,6 @@
 
   }
 
-	focusHidden();
   function focusHidden(){ hidden.focus(); }
 
 canvas.addEventListener('mousedown', (e)=>{
@@ -242,12 +239,6 @@ canvas.addEventListener('mousedown', (e)=>{
   hidden.addEventListener('input',(e)=>{
     const val = hidden.value; hidden.value='';
     if(val.length>0) EditorApp.model.insertTextAtCursor(val);
-  });
-
-
-  hidden.addEventListener('keydown', (e)=>{
-	  console.log("keydown")
-    if(EditorApp.model.handleKey) EditorApp.model.handleKey(e, render);
   });
 
   canvas.addEventListener('keydown', (e)=>{

@@ -1,46 +1,30 @@
 (() => {
+  // setup.
+  // the big div that contains the canvas.
   const viewport = document.getElementById('viewport');
-  const spacer = document.getElementById('scroll-spacer');
+  // the actual canvas we edit on and its context..
   const canvas = document.getElementById('editor-canvas');
   const ctx = canvas.getContext('2d');
 
-  // Hidden textarea to receive IME and real keyboard input reliably
+
+ // Hidden textarea to receive IME and real keyboard input reliably
   const hidden = document.createElement('textarea');
   hidden.className = 'invisibleInput';
   document.body.appendChild(hidden);
 
-  const cfg = {
-    fontSize: parseInt(getComputedStyle(document.documentElement).getPropertyValue('--font-size')) || 14,
-    fontFamily: getComputedStyle(document.documentElement).getPropertyValue('--font-family') || 'monospace',
-    lineHeight: parseInt(getComputedStyle(document.documentElement).getPropertyValue('--line-height')) || 20,
-    gutterWidth: parseInt(getComputedStyle(document.documentElement).getPropertyValue('--gutter-width')) || 72,
-    padding: 8,
-    cursorBlink: 500,
-    tabSize: 2,
-    bg: getComputedStyle(document.documentElement).getPropertyValue('--panel').trim(),
-    textColor: getComputedStyle(document.documentElement).getPropertyValue('--soft').trim(),
-    cursorInv: getComputedStyle(document.documentElement).getPropertyValue('--cursor-inv').trim(),
-  };
+  const cfg = window.EditorApp.cfg;
+  const layout = window.EditorApp.layout;
 
-  function measureCharWidth(font){
-    ctx.font = font;
-    const sample = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+[]{};:\\"\'`<>?/| ';
-    let max = 0;
-    for(const ch of sample){
-      max = Math.max(max, ctx.measureText(ch).width);
-    }
-    return Math.ceil(max);
-  }
 
   function setupMetrics(){
     cfg.font = `${cfg.fontSize}px ${cfg.fontFamily}`;
     ctx.font = cfg.font;
-    cfg.charWidth = measureCharWidth(cfg.font);
     cfg.charsPerRow = Math.max(10, Math.floor((window.innerWidth - cfg.gutterWidth - cfg.padding*2)/cfg.charWidth));
     cfg.visibleRows = Math.max(3, Math.floor((window.innerHeight - cfg.padding*2)/cfg.lineHeight));
   }
+  setupMetrics(); // fills in bits of the canvas..
+	resizeCanvas();
 
-  setupMetrics();
   window.addEventListener('resize', ()=>{
     setupMetrics(); 
     resizeCanvas(); 
@@ -48,21 +32,27 @@
   });
 
   function resizeCanvas(){
-    canvas.width = Math.max(viewport.clientWidth, 300);
-    canvas.height = Math.max(viewport.clientHeight, 200);
-    canvas.style.left = viewport.scrollLeft + 'px';
-    canvas.style.top = viewport.scrollTop + 'px';
-    spacer.style.height = (EditorApp.model.model.length * cfg.lineHeight + cfg.padding*2) + 'px';
+	  
+	  const dpr = window.devicePixelRatio || 1;
+
+	  const cssWidth  = window.innerWidth;
+	  const cssHeight = window.innerHeight;
+	  console.log("resizeCanvas to "+ cssWidth,cssHeight)
+	  
+	  // Bitmap size (rendering resolution)
+	  canvas.width  = Math.floor(cssWidth  * dpr-window.EditorApp.layout.projectPanelWidth); // this scales the viewport Correctly as well.. all in one go.
+	  canvas.height = Math.floor(cssHeight * dpr-(viewport.scrollTop+80));
+	  
+   	  layout.canvasWidth=canvas.width;
+	  layout.canvasHeight=canvas.height;
+      canvas.style.left = viewport.scrollLeft + 'px';
+      canvas.style.top = viewport.scrollTop + 'px';
+//    spacer.style.height = (EditorApp.model.model.length * cfg.lineHeight + cfg.padding*2) + 'px';
   }
 
-  viewport.addEventListener('scroll', ()=>{
-    canvas.style.left = viewport.scrollLeft + 'px';
-    canvas.style.top = viewport.scrollTop + 'px';
-    render();
-  });
 
   function clampCursor(){
-    const cursor = EditorApp.model.cursor;
+    const cursor = EditorApp.model.cursor; // now also contains x,y..
     const model = EditorApp.model.model;
     if(cursor.line < 0) cursor.line = 0;
     if(cursor.line >= model.length) cursor.line = model.length-1;
@@ -90,9 +80,11 @@
   }
 
   let blink = true;
+  console.log("starting cursorblink with interval"+cfg.cursorBlink),
   setInterval(()=>{ blink = !blink; render(); }, cfg.cursorBlink);
 
-  function render(){
+  function render()
+  {
     const model = EditorApp.model.model;
     const cursor = EditorApp.model.cursor;
 
@@ -134,7 +126,84 @@
         ctx.fillText(ch, x, y+2);
         x += cfg.charWidth;
       }
+	  // ==== Draw the Cursor in X Y ====
+    // inverted blinking cursor
+    if(1)
+    {
+      console.log("showing cursor at"+cursor.line, cursor.col);
+      const underlying = EditorApp.model.getCharAt(cursor.line, cursor.col) || ' ';
+	  const curX = cfg.gutterWidth + cfg.padding + cursor.col*cfg.charWidth - viewport.scrollLeft;
+	  const curY = cfg.padding + (cursor.line - startLine)*cfg.lineHeight - (scrollY - startLine*cfg.lineHeight);
+	  ctx.save();
+	  if(blink)
+	  {
+		ctx.fillStyle = cfg.cursorInv;
+		ctx.fillRect(curX, curY+1, cfg.charWidth, cfg.lineHeight-2);
+		ctx.fillStyle = cfg.bg;
+		ctx.fillText(underlying, curX, curY+2);
+	}else{
+		ctx.fillStyle = cfg.bg;
+		ctx.fillRect(curX, curY+1, cfg.charWidth, cfg.lineHeight-2);
+		ctx.fillStyle = cfg.cursorInv;
+		ctx.fillText(underlying, curX, curY+2);
+	}
+	  
+	  
     }
+
+	  // ==== Draw scrollbars ====
+	  drawScrollBars();
+
+	// show canvas size is correctly caculated..
+    ctx.strokeStyle = "#fff";
+    ctx.strokeRect(1,1,canvas.width-2,canvas.height-2);
+
+
+    }
+	function drawScrollBars()
+	{
+		ctx.save();
+		ctx.globalAlpha=0.3;
+		//ctx.filter = "invert(100%)";
+
+		// Scrollbar track style
+		ctx.fillStyle = '#0f3f29';
+
+		const vpWidth  = canvas.width;
+		const vpHeight = canvas.height;
+
+		const contentWidth  = Math.max(canvas.width, cfg.charWidth * model.reduce((max, line) => Math.max(max, line.length), 0) + cfg.gutterWidth + cfg.padding*2);
+		const contentHeight = model.length * cfg.lineHeight + cfg.padding*2;
+
+		
+
+		// Horizontal scrollbar (bottom, leave bottom-right corner empty)
+		const hTrackWidth = vpWidth - window.EditorApp.layout.scrollSize; // leave project panel + corner
+		const hTrackHeight = window.EditorApp.layout.scrollSize;
+		const hTrackX = 0;
+		const hTrackY = vpHeight - window.EditorApp.layout.scrollSize;
+		ctx.fillRect(hTrackX, hTrackY, hTrackWidth, hTrackHeight);
+
+		const hThumbWidth = Math.max(20, (vpWidth / contentWidth) * hTrackWidth);
+		const hThumbX = (viewport.scrollLeft / (contentWidth - vpWidth)) * (hTrackWidth - hThumbWidth);
+		ctx.fillStyle = '#9bd9b0';
+		ctx.fillRect(hThumbX, hTrackY+2, hThumbWidth, hTrackHeight-6);
+
+		// Vertical scrollbar (right, leave bottom-right corner empty)
+		ctx.fillStyle = '#0f3f29';
+		const vTrackX =  vpWidth - window.EditorApp.layout.scrollSize;
+		const vTrackY = 0; 
+		const vTrackWidth = window.EditorApp.layout.scrollSize;
+		const vTrackHeight = vpHeight - window.EditorApp.layout.scrollSize; // leave space for horizontal scrollbar		ctx.fillRect(vTrackX, vTrackY, vTrackWidth, vTrackHeight);
+		ctx.fillRect(vTrackX, vTrackY, vTrackWidth, vTrackHeight);
+
+		const vThumbHeight = Math.max(20, (vpHeight / contentHeight) * vTrackHeight);
+		const vThumbY = (viewport.scrollTop / (contentHeight - vpHeight)) * (vTrackHeight - vThumbHeight);
+		ctx.fillStyle = '#9bd9b0';
+		ctx.fillRect(vTrackX+2, vThumbY, vTrackWidth-6, vThumbHeight);
+
+		ctx.restore();
+	}
 
     clampCursor();
 
@@ -153,19 +222,12 @@
       ctx.strokeRect(mx-2,my+1,cfg.charWidth+4,cfg.lineHeight-2);
     }
 
-    // inverted cursor
-    if(document.activeElement === canvas){
-      const underlying = EditorApp.model.getCharAt(cursor.line, cursor.col) || ' ';
-      ctx.fillStyle = cfg.cursorInv;
-      ctx.fillRect(curX, curY+1, cfg.charWidth, cfg.lineHeight-2);
-      ctx.fillStyle = cfg.bg;
-      ctx.fillText(underlying, curX, curY+2);
-    }
   }
 
+	focusHidden();
   function focusHidden(){ hidden.focus(); }
 
-  canvas.addEventListener('mousedown', (e)=>{
+canvas.addEventListener('mousedown', (e)=>{
     focusHidden();
     const rect = canvas.getBoundingClientRect();
     const p = pixelToLetter(e.clientX-rect.left, e.clientY-rect.top);
@@ -173,20 +235,24 @@
     EditorApp.model.cursor.col = p.col;
     render();
   });
-
+  
+  
   hidden.addEventListener('input',(e)=>{
     const val = hidden.value; hidden.value='';
     if(val.length>0) EditorApp.model.insertTextAtCursor(val);
   });
 
+
   hidden.addEventListener('keydown', (e)=>{
+	  console.log("keydown")
     if(EditorApp.model.handleKey) EditorApp.model.handleKey(e, render);
   });
 
-  canvas.addEventListener('focus', ()=>{ focusHidden(); });
-  canvas.addEventListener('blur', ()=>{ /* nothing */ });
+  canvas.addEventListener('keydown', (e)=>{
+	  console.log("keydown")
+    if(EditorApp.model.handleKey) EditorApp.model.handleKey(e, render);
+  });
 
-  setTimeout(()=>{ resizeCanvas(); render(); canvas.focus(); focusHidden(); },50);
 
   window.EditorApp.viewport = { render, resizeCanvas, focusHidden };
 })();

@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
   verItem.textContent = 'v' + formatted;
   verItem.style.cssText = 'margin-left:auto; padding:0 10px; font:12px monospace; align-self:center;';
   document.getElementById('datetime').appendChild(verItem);
-	console.log("updating version string:"+'' + formatted);
+	console.log("updating version string:"+'v' + formatted);
 });
 
 
